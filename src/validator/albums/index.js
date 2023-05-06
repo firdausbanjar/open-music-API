@@ -10,4 +10,4 @@ const AlbumsValidator = {
     },
 };
 
-module.exports = { AlbumsValidator };
+module.exports = AlbumsValidator;
