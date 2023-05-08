@@ -9,6 +9,19 @@ class SongsService {
         this._pool = new Pool();
     }
 
+    async verifySong(id) {
+        const query = {
+            text: 'SELECT * FROM songs WHERE id = $1',
+            values: [id],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rowCount) {
+            throw new NotFoundError('Lagu tidak ditemukan');
+        }
+    }
+
     async addSong({ title, year, genre, performer, duration, albumId }) {
         const id = `song-${nanoid(16)}`;
 

@@ -1,7 +1,7 @@
 const InvariantError = require('../../exceptions/InvariantError');
 const { PlaylistPayloadSchema } = require('./schema');
 
-const PlaylistValidator = {
+const PlaylistsValidator = {
     validatePlaylistPayload: (payload) => {
         const validationResult = PlaylistPayloadSchema.validate(payload);
         if (validationResult.error) {
@@ -10,4 +10,4 @@ const PlaylistValidator = {
     },
 };
 
-module.exports = PlaylistValidator;
+module.exports = PlaylistsValidator;
