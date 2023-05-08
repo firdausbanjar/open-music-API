@@ -7,7 +7,6 @@ const Jwt = require('@hapi/jwt');
 const albums = require('./api/albums');
 const authentications = require('./api/authentications');
 const playlists = require('./api/playlists');
-const playlistSongs = require('./api/playlistSongs');
 const songs = require('./api/songs');
 const users = require('./api/users');
 
@@ -25,7 +24,6 @@ const TokenManager = require('./tokenize/TokenManager');
 const AlbumsValidator = require('./validator/albums');
 const AuthenticationsValidator = require('./validator/authentications');
 const PlaylistsValidator = require('./validator/playlists');
-const PlaylistSongsValidator = require('./validator/playlistSongs');
 const SongsValidator = require('./validator/songs');
 const UsersValidator = require('./validator/users');
 
@@ -104,17 +102,10 @@ const init = async () => {
         {
             plugin: playlists,
             options: {
-                service: playlistsService,
-                validator: PlaylistsValidator,
-            },
-        },
-        {
-            plugin: playlistSongs,
-            options: {
-                playlistSongsService,
                 playlistsService,
+                playlistSongsService,
                 songsService,
-                validator: PlaylistSongsValidator,
+                validator: PlaylistsValidator,
             },
         },
     ]);
