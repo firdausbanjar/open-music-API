@@ -8,19 +8,6 @@ class PlaylistSongsService {
         this._pool = new Pool();
     }
 
-    // async verifyPlaylistSong(songId) {
-    //     const query = {
-    //         text: 'SELECT * FROM playlist_songs WHERE song_id = $1',
-    //         values: [songId],
-    //     };
-
-    //     const result = await this._pool.query(query);
-
-    //     if (!result.rowCount) {
-    //         throw new NotFoundError('Lagu tidak ditemukan didalam playlist');
-    //     }
-    // }
-
     async addPlaylistSong(playlistId, songId) {
         const id = `playlistsong-${nanoid(16)}`;
 

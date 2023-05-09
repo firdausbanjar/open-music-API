@@ -5,8 +5,9 @@ const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class PlaylistsService {
-    constructor() {
+    constructor(collaborationsService) {
         this._pool = new Pool();
+        this._collaborationsService = collaborationsService;
     }
 
     async verifyPlaylistOwner(id, owner) {
@@ -28,19 +29,21 @@ class PlaylistsService {
         }
     }
 
-    // async verifyPlaylistAccess(playlistId, userId) {
-    //     try {
-    //         await this.verifyPlaylistOwner(playlistId, userId);
-    //     } catch (error) {
-    //         if (error instanceof NotFoundError) {
-    //             throw error
-    //         }
+    async verifyPlaylistAccess(playlistId, userId) {
+        try {
+            await this.verifyPlaylistOwner(playlistId, userId);
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                throw error;
+            }
 
-    //         try {
-    //             await this.
-    //         }
-    //     }
-    // }
+            try {
+                await this._collaborationsService.verifyCollaborator(playlistId, userId);
+            } catch {
+                throw error;
+            }
+        }
+    }
 
     async addPlaylist({ name, owner }) {
         const id = `playlist-${nanoid(16)}`;
@@ -64,7 +67,9 @@ class PlaylistsService {
             text: `SELECT playlists.id, playlists.name, users.username
             FROM playlists
             LEFT JOIN users ON users.id = playlists.owner
-            WHERE playlists.owner = $1`,
+            LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
+            WHERE playlists.owner = $1 OR collaborations.user_id = $1
+            GROUP BY playlists.id`,
             values: [owner],
         };
 
