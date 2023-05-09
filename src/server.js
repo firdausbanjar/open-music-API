@@ -6,6 +6,7 @@ const Jwt = require('@hapi/jwt');
 
 const albums = require('./api/albums');
 const authentications = require('./api/authentications');
+const collaborations = require('./api/collaborations');
 const playlists = require('./api/playlists');
 const songs = require('./api/songs');
 const users = require('./api/users');
@@ -15,6 +16,7 @@ const ClientError = require('./exceptions/ClientError');
 const AlbumsService = require('./services/postgres/AlbumsService');
 const AuthenticationsService = require('./services/postgres/AuthenticationsService');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
+const PlaylistSongActivitiesService = require('./services/postgres/PlaylistSongActivitiesService');
 const PlaylistSongsService = require('./services/postgres/PlaylistSongsService');
 const PlaylistsService = require('./services/postgres/PlaylistsService');
 const SongsService = require('./services/postgres/SongsService');
@@ -24,6 +26,7 @@ const TokenManager = require('./tokenize/TokenManager');
 
 const AlbumsValidator = require('./validator/albums');
 const AuthenticationsValidator = require('./validator/authentications');
+const CollaborationsValidator = require('./validator/collaborations');
 const PlaylistsValidator = require('./validator/playlists');
 const SongsValidator = require('./validator/songs');
 const UsersValidator = require('./validator/users');
@@ -36,6 +39,7 @@ const init = async () => {
     const collaborationsService = new CollaborationsService();
     const playlistsService = new PlaylistsService(collaborationsService);
     const playlistSongsService = new PlaylistSongsService();
+    const playlistSongActivitiesService = new PlaylistSongActivitiesService();
 
     const server = Hapi.server({
         port: process.env.PORT,
@@ -106,6 +110,7 @@ const init = async () => {
             options: {
                 playlistsService,
                 playlistSongsService,
+                playlistSongActivitiesService,
                 songsService,
                 validator: PlaylistsValidator,
             },
@@ -115,6 +120,7 @@ const init = async () => {
             options: {
                 collaborationsService,
                 playlistsService,
+                usersService,
                 validator: CollaborationsValidator,
             },
         },

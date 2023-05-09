@@ -21,8 +21,6 @@ class PlaylistSongsService {
         if (!result.rows[0].id) {
             throw new InvariantError('Lagu gagal ditambahkan');
         }
-
-        return result.rows[0].id;
     }
 
     async getPlaylistSongsByPlaylistId(playlistId) {
@@ -63,8 +61,6 @@ class PlaylistSongsService {
         };
 
         const result = await this._pool.query(query);
-
-        if (songId === 123) console.log(`count: ${result.rowCount}`);
 
         if (!result.rowCount) {
             throw new NotFoundError('Gagal menghapus lagu. Id tidak ditemukan');

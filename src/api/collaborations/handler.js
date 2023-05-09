@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 class CollaborationsHandler {
-    constructor(collaborationsService, playlistsService, validator) {
+    constructor(collaborationsService, playlistsService, usersService, validator) {
         this._collaborationsService = collaborationsService;
         this._playlistsService = playlistsService;
+        this._usersService = usersService;
         this._validator = validator;
     }
 
@@ -11,7 +13,8 @@ class CollaborationsHandler {
         const { id: credentialId } = request.auth.credentials;
         const { playlistId, userId } = request.payload;
 
-        this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
+        await this._usersService.verifyUserId(userId);
+        await this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
         const collaborationId = await this._collaborationsService.addCollaboration(
             playlistId,
             userId
@@ -27,14 +30,14 @@ class CollaborationsHandler {
         return response;
     }
 
-    async deleteCollaborationHandler() {
+    async deleteCollaborationHandler(request, h) {
         this._validator.validateCollaborationPayload(request.payload);
 
         const { id: credentialId } = request.auth.credentials;
         const { playlistId, userId } = request.payload;
 
-        this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
-        await this._collaborationsService.addCollaboration(playlistId, userId);
+        await this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
+        await this._collaborationsService.deleteCollaboration(playlistId, userId);
 
         return {
             status: 'success',

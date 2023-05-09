@@ -4,10 +4,24 @@ const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const AuthenticationError = require('../../exceptions/AuthenticationError');
 const InvariantError = require('../../exceptions/InvariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class UsersService {
     constructor() {
         this._pool = new Pool();
+    }
+
+    async verifyUserId(userId) {
+        const query = {
+            text: 'SELECT * FROM users WHERE id = $1',
+            values: [userId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rowCount) {
+            throw new NotFoundError('User tidak ditemukan');
+        }
     }
 
     async verifyUserCredential(username, password) {

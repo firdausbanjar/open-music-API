@@ -1,8 +1,15 @@
 /* eslint-disable no-unused-vars */
 class PlaylistsHandler {
-    constructor(playlistsService, playlistSongsService, songsService, validator) {
+    constructor(
+        playlistsService,
+        playlistSongsService,
+        playlistSongActivitiesService,
+        songsService,
+        validator
+    ) {
         this._playlistsService = playlistsService;
         this._playlistSongsService = playlistSongsService;
+        this._playlistSongActivitiesService = playlistSongActivitiesService;
         this._songsService = songsService;
         this._validator = validator;
     }
@@ -49,7 +56,7 @@ class PlaylistsHandler {
             message: 'Playlist berhasil dihapus',
         };
     }
-    // ===============AKHIR PLAYLIST HANDLER===============
+    // ===============PLAYLIST HANDLER===============
 
     // ===============PLAYLIST SONGS HANDLER===============
     async postPlaylistSongHandler(request, h) {
@@ -62,6 +69,12 @@ class PlaylistsHandler {
         await this._songsService.verifySong(songId);
         await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
         await this._playlistSongsService.addPlaylistSong(playlistId, songId);
+        await this._playlistSongActivitiesService.addPlaylistSongActivity(
+            playlistId,
+            songId,
+            credentialId,
+            'add'
+        );
 
         const response = h.response({
             status: 'success',
@@ -95,13 +108,36 @@ class PlaylistsHandler {
 
         await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
         await this._playlistSongsService.deletePlaylistSong(playlistId, songId);
+        await this._playlistSongActivitiesService.addPlaylistSongActivity(
+            playlistId,
+            songId,
+            credentialId,
+            'delete'
+        );
 
         return {
             status: 'success',
             message: 'Lagu berhasil dihapus dari playlist',
         };
     }
-    // ===============AKHIR PLAYLIST SONGS HANDLER===============
+    // ===============PLAYLIST SONGS HANDLER===============
+
+    // ===============PLAYLIST SONG ACTIVITIES HANDLER===============
+    async getPlaylistSongActivitiesByPlaylistHandler(request, h) {
+        const { id: playlistId } = request.params;
+        const { id: credentialId } = request.auth.credentials;
+
+        await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
+        const data = await this._playlistSongActivitiesService.getPlaylistSongActivitiesByPlaylisId(
+            playlistId
+        );
+
+        return {
+            status: 'success',
+            data,
+        };
+    }
+    // ===============PLAYLIST SONG ACTIVITIES HANDLER===============
 }
 
 module.exports = PlaylistsHandler;
