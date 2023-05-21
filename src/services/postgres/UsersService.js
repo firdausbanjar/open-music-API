@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');

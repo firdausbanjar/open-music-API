@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
@@ -10,6 +9,7 @@ const collaborations = require('./api/collaborations');
 const playlists = require('./api/playlists');
 const songs = require('./api/songs');
 const users = require('./api/users');
+const _exports = require('./api/exports');
 
 const ClientError = require('./exceptions/ClientError');
 
@@ -23,6 +23,7 @@ const SongsService = require('./services/postgres/SongsService');
 const UsersService = require('./services/postgres/UsersService');
 
 const TokenManager = require('./tokenize/TokenManager');
+const config = require('./utils/config');
 
 const AlbumsValidator = require('./validator/albums');
 const AuthenticationsValidator = require('./validator/authentications');
@@ -30,6 +31,8 @@ const CollaborationsValidator = require('./validator/collaborations');
 const PlaylistsValidator = require('./validator/playlists');
 const SongsValidator = require('./validator/songs');
 const UsersValidator = require('./validator/users');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
 
 const init = async () => {
     const albumsService = new AlbumsService();
@@ -42,8 +45,8 @@ const init = async () => {
     const playlistSongActivitiesService = new PlaylistSongActivitiesService();
 
     const server = Hapi.server({
-        port: process.env.PORT,
-        host: process.env.HOST,
+        port: config.app.port,
+        host: config.app.host,
         routes: {
             cors: {
                 origin: ['*'],
@@ -122,6 +125,14 @@ const init = async () => {
                 playlistsService,
                 usersService,
                 validator: CollaborationsValidator,
+            },
+        },
+        {
+            plugin: _exports,
+            options: {
+                producerService: ProducerService,
+                playlistsService,
+                validator: ExportsValidator,
             },
         },
     ]);

@@ -14,7 +14,6 @@ class PlaylistsHandler {
         this._validator = validator;
     }
 
-    // ===============PLAYLIST HANDLER===============
     async postPlaylistHandler(request, h) {
         this._validator.validatePlaylistPayload(request.payload);
         const { name } = request.payload;
@@ -56,9 +55,7 @@ class PlaylistsHandler {
             message: 'Playlist berhasil dihapus',
         };
     }
-    // ===============PLAYLIST HANDLER===============
 
-    // ===============PLAYLIST SONGS HANDLER===============
     async postPlaylistSongHandler(request, h) {
         this._validator.validatePlaylistSongPayload(request.payload);
 
@@ -120,9 +117,7 @@ class PlaylistsHandler {
             message: 'Lagu berhasil dihapus dari playlist',
         };
     }
-    // ===============PLAYLIST SONGS HANDLER===============
 
-    // ===============PLAYLIST SONG ACTIVITIES HANDLER===============
     async getPlaylistSongActivitiesByPlaylistHandler(request, h) {
         const { id: playlistId } = request.params;
         const { id: credentialId } = request.auth.credentials;
@@ -137,7 +132,6 @@ class PlaylistsHandler {
             data,
         };
     }
-    // ===============PLAYLIST SONG ACTIVITIES HANDLER===============
 }
 
 module.exports = PlaylistsHandler;
