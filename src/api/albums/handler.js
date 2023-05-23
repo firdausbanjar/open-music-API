@@ -1,8 +1,11 @@
+const config = require('../../utils/config');
+
 /* eslint-disable no-unused-vars */
 class AlbumsHandler {
-    constructor(albumsService, songsService, validator) {
+    constructor(albumsService, songsService, storageService, validator) {
         this._albumsService = albumsService;
         this._songsService = songsService;
+        this._storageService = storageService;
         this._validator = validator;
     }
 
@@ -35,6 +38,10 @@ class AlbumsHandler {
                     id: album.id,
                     name: album.name,
                     year: album.year,
+                    coverUrl:
+                        album.cover === null
+                            ? null
+                            : `http://${config.app.host}:${config.app.port}/albums/images/${album.cover}`,
                     songs,
                 },
             },
@@ -61,6 +68,23 @@ class AlbumsHandler {
             status: 'success',
             message: 'Album berhasil dihapus',
         };
+    }
+
+    async postUploadCoverAlbumHandler(request, h) {
+        const { cover } = request.payload;
+        const { id } = request.params;
+
+        this._validator.validateImageHeaders(cover.hapi.headers);
+
+        const filename = await this._storageService.writeFile(cover, cover.hapi);
+        await this._albumsService.uploadCoverById(id, filename);
+
+        const response = h.response({
+            status: 'success',
+            message: 'Sampul berhasil diunggah',
+        });
+        response.code(201);
+        return response;
     }
 }
 
