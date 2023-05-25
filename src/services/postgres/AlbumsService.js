@@ -8,6 +8,19 @@ class AlbumsService {
         this._pool = new Pool();
     }
 
+    async verifyAlbumById(albumId) {
+        const query = {
+            text: 'SELECT id FROM albums WHERE id = $1',
+            values: [albumId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rows[0].id) {
+            throw new NotFoundError('Album tidak ditemukan');
+        }
+    }
+
     async addAlbum({ name, year }) {
         const id = `album-${nanoid(16)}`;
 

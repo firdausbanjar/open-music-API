@@ -2,10 +2,19 @@ const config = require('../../utils/config');
 
 /* eslint-disable no-unused-vars */
 class AlbumsHandler {
-    constructor(albumsService, songsService, storageService, validator) {
+    constructor(
+        albumsService,
+        songsService,
+        storageService,
+        albumLikesService,
+        usersService,
+        validator
+    ) {
         this._albumsService = albumsService;
         this._songsService = songsService;
         this._storageService = storageService;
+        this._albumLikesService = albumLikesService;
+        this._usersService = usersService;
         this._validator = validator;
     }
 
@@ -25,7 +34,7 @@ class AlbumsHandler {
         return response;
     }
 
-    async getAlbumByIdHandler(request, h) {
+    async getAlbumByIdHandler(request) {
         const { id } = request.params;
 
         const album = await this._albumsService.getAlbumById(id);
@@ -48,7 +57,7 @@ class AlbumsHandler {
         };
     }
 
-    async putAlbumByIdHandler(request, h) {
+    async putAlbumByIdHandler(request) {
         this._validator.validateAlbumPayload(request.payload);
         const { id } = request.params;
 
@@ -60,7 +69,7 @@ class AlbumsHandler {
         };
     }
 
-    async deleteAlbumByIdHandler(request, h) {
+    async deleteAlbumByIdHandler(request) {
         const { id } = request.params;
         await this._albumsService.deleteAlbumById(id);
 
@@ -86,6 +95,26 @@ class AlbumsHandler {
         response.code(201);
         return response;
     }
+
+    async postAlbumLikeHandler(request, h) {
+        const { id: credentialId } = request.auth.credentials;
+        const { id: albumId } = request.params;
+
+        await this._usersService.verifyUserById(credentialId);
+        await this._albumsService.verifyAlbumById(albumId);
+        await this._albumLikesService.addAlbumLike(credentialId, albumId);
+
+        const response = h.response({
+            status: 'success',
+            message: 'suka album',
+        });
+        response.code(201);
+        return response;
+    }
+
+    // async getAlbumLikesHandler(request, h) {}
+
+    // async deleteAlbumLikeHandler(request, h) {}
 }
 
 module.exports = AlbumsHandler;

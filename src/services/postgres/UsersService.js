@@ -10,7 +10,7 @@ class UsersService {
         this._pool = new Pool();
     }
 
-    async verifyUserId(userId) {
+    async verifyUserById(userId) {
         const query = {
             text: 'SELECT * FROM users WHERE id = $1',
             values: [userId],
@@ -18,7 +18,7 @@ class UsersService {
 
         const result = await this._pool.query(query);
 
-        if (!result.rowCount) {
+        if (!result.rows[0].id) {
             throw new NotFoundError('User tidak ditemukan');
         }
     }
