@@ -8,6 +8,19 @@ class AlbumLikesService {
         this._pool = new Pool();
     }
 
+    async verifyAlbumLiked(userId, albumId) {
+        const query = {
+            text: 'SELECT * FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
+            values: [userId, albumId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (result.rowCount) {
+            throw new InvariantError('Sudah menyukai album');
+        }
+    }
+
     async addAlbumLike(userId, albumId) {
         const id = `like-${nanoid(16)}`;
 
@@ -25,17 +38,13 @@ class AlbumLikesService {
         return result.rows[0].id;
     }
 
-    async getAlbumLike(albumId) {
+    async getAlbumLikes(albumId) {
         const query = {
             text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
             values: [albumId],
         };
 
         const result = await this._pool.query(query);
-
-        if (!result.rowCount) {
-            throw new NotFoundError('Album tidak ditemukan');
-        }
 
         return result.rowCount;
     }
@@ -49,7 +58,7 @@ class AlbumLikesService {
         const result = await this._pool.query(query);
 
         if (!result.rows[0].id) {
-            throw new NotFoundError('Gagal membatal');
+            throw new NotFoundError('Gagal membatal. Album tidak ditemukan');
         }
 
         return result.rows[0].id;

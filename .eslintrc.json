@@ -27,6 +27,7 @@
         "function-paren-newline": "off",
         "quotes": "off",
         "newline-per-chained-call": "off",
-        "import/no-extraneous-dependencies": "off"
+        "import/no-extraneous-dependencies": "off",
+        "camelcase": "off"
     }
 }

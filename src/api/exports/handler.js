@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 class ExportsHandler {
     constructor(producerService, playlistsService, validator) {
         this._producerService = producerService;

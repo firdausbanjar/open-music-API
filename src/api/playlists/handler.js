@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 class PlaylistsHandler {
     constructor(
         playlistsService,
@@ -31,7 +30,7 @@ class PlaylistsHandler {
         return response;
     }
 
-    async getPlaylistHandler(request, h) {
+    async getPlaylistHandler(request) {
         const { id: credentialId } = request.auth.credentials;
         const playlists = await this._playlistsService.getPlaylists(credentialId);
 
@@ -43,7 +42,7 @@ class PlaylistsHandler {
         };
     }
 
-    async deletePlaylistHandler(request, h) {
+    async deletePlaylistHandler(request) {
         const { id } = request.params;
         const { id: credentialId } = request.auth.credentials;
 
@@ -81,7 +80,7 @@ class PlaylistsHandler {
         return response;
     }
 
-    async getPlaylistSongByPlaylistIdHandler(request, h) {
+    async getPlaylistSongByPlaylistIdHandler(request) {
         const { id: playlistId } = request.params;
         const { id: credentialId } = request.auth.credentials;
 
@@ -96,7 +95,7 @@ class PlaylistsHandler {
         };
     }
 
-    async deletePlaylistSongHandler(request, h) {
+    async deletePlaylistSongHandler(request) {
         this._validator.validatePlaylistSongPayload(request.payload);
 
         const { id: playlistId } = request.params;
@@ -118,7 +117,7 @@ class PlaylistsHandler {
         };
     }
 
-    async getPlaylistSongActivitiesByPlaylistHandler(request, h) {
+    async getPlaylistSongActivitiesByPlaylistHandler(request) {
         const { id: playlistId } = request.params;
         const { id: credentialId } = request.auth.credentials;
 

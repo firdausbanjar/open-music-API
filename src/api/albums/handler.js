@@ -1,6 +1,5 @@
 const config = require('../../utils/config');
 
-/* eslint-disable no-unused-vars */
 class AlbumsHandler {
     constructor(
         albumsService,
@@ -97,24 +96,47 @@ class AlbumsHandler {
     }
 
     async postAlbumLikeHandler(request, h) {
-        const { id: credentialId } = request.auth.credentials;
         const { id: albumId } = request.params;
+        const { id: credentialId } = request.auth.credentials;
 
-        await this._usersService.verifyUserById(credentialId);
         await this._albumsService.verifyAlbumById(albumId);
+        await this._usersService.verifyUserById(credentialId);
+        await this._albumLikesService.verifyAlbumLiked(credentialId, albumId);
         await this._albumLikesService.addAlbumLike(credentialId, albumId);
 
         const response = h.response({
             status: 'success',
-            message: 'suka album',
+            message: 'Menyukai album',
         });
         response.code(201);
         return response;
     }
 
-    // async getAlbumLikesHandler(request, h) {}
+    async deleteAlbumLikeHandler(request) {
+        const { id: credentialId } = request.auth.credentials;
+        const { id: albumId } = request.params;
 
-    // async deleteAlbumLikeHandler(request, h) {}
+        await this._usersService.verifyUserById(credentialId);
+        await this._albumLikesService.deleteAlbumLike(credentialId, albumId);
+
+        return {
+            status: 'success',
+            message: 'Berhasil membatalkan',
+        };
+    }
+
+    async getAlbumLikesHandler(request) {
+        const { id } = request.params;
+
+        const number = await this._albumLikesService.getAlbumLikes(id);
+
+        return {
+            status: 'success',
+            data: {
+                likes: number,
+            },
+        };
+    }
 }
 
 module.exports = AlbumsHandler;

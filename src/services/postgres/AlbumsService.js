@@ -10,13 +10,13 @@ class AlbumsService {
 
     async verifyAlbumById(albumId) {
         const query = {
-            text: 'SELECT id FROM albums WHERE id = $1',
+            text: 'SELECT * FROM albums WHERE id = $1',
             values: [albumId],
         };
 
         const result = await this._pool.query(query);
 
-        if (!result.rows[0].id) {
+        if (!result.rowCount) {
             throw new NotFoundError('Album tidak ditemukan');
         }
     }
