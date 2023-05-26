@@ -4,7 +4,8 @@ const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class AlbumsService {
-    constructor() {
+    constructor(cacheService) {
+        this._cacheService = cacheService;
         this._pool = new Pool();
     }
 
@@ -64,6 +65,8 @@ class AlbumsService {
         if (!result.rowCount) {
             throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan');
         }
+
+        await this._cacheService.delete(`album:${id}`);
     }
 
     async uploadCoverById(albumId, cover) {
@@ -77,6 +80,8 @@ class AlbumsService {
         if (!result.rowCount) {
             throw new NotFoundError('Gagal menyinpan cover. Id album tidak ditemukan');
         }
+
+        await this._cacheService.delete(`album:${albumId}`);
 
         return result.rows[0];
     }
@@ -92,6 +97,8 @@ class AlbumsService {
         if (!result.rowCount) {
             throw new NotFoundError('Gagal menghapus album. Id tidak ditemukan');
         }
+
+        await this._cacheService.delete(`album:${id}`);
     }
 }
 
